@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    text-align: center;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.movie-form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.movie-form input {
+    padding: 8px;
+    font-size: 1rem;
+}
+
+.movie-form button {
+    padding: 8px 12px;
+    margin-left: 5px;
+}
+
+.movie-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.movie-card {
+    background: #222;
+    padding: 10px;
+    width: 200px;
+    border-radius: 8px;
+}
+
+.movie-card img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.movie-card.watched {
+    opacity: 0.6;
+}
+
+.actions button {
+    margin: 3px;
+}
+
+.delete-btn {
+    background: red;
+    color: white;
+}

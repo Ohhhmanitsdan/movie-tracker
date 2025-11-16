@@ -3,7 +3,7 @@
 A single-repo Next.js application that lets two friends share a movie backlog, rate what they watch, get TMDb-powered artwork/trailers, pull recommendations based on their ratings, and spin a random pick when nobody can decide.
 
 ## Features
-- Email/password login for two default users (changeable via SQLite) with secure session cookies.
+- Email/password login for two default users (editable via the JSON data file) with secure session cookies.
 - Add movies by title – details, posters, trailers, and descriptions are fetched from TMDb automatically.
 - Shared prioritized queue with up/down ordering, completion tracking, and per-user + average ratings.
 - Smart recommendation shelf sourced from the highest-rated titles on your list.
@@ -22,7 +22,7 @@ A single-repo Next.js application that lets two friends share a movie backlog, r
    ```
    Visit `http://localhost:3000` in your browser.
 
-The app stores data in `data/movie-tracker.db` (SQLite). The database file is created automatically; delete it if you want a fresh start.
+The app stores data in `data/movie-tracker.json`. The file is created automatically; delete it if you want a fresh start.
 
 ## Default logins
 | Name     | Email                    | Password     |
@@ -30,7 +30,7 @@ The app stores data in `data/movie-tracker.db` (SQLite). The database file is cr
 | Daniel   | `daniel@watchbuddy.dev`  | `watchbuddy1`|
 | Co-Pilot | `copilot@watchbuddy.dev` | `watchbuddy2`|
 
-Update or add users directly in the `users` table inside `data/movie-tracker.db` if needed.
+Update or add users directly in the `users` array inside `data/movie-tracker.json` if needed.
 
 ## Project structure
 ```

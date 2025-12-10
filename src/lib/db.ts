@@ -1,4 +1,4 @@
-import { MongoClient, type Db } from "mongodb";
+import mongoose from "mongoose";
 
 const uri = process.env.MONGODB_URI;
 
@@ -7,24 +7,19 @@ if (!uri) {
 }
 
 declare global {
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
+  var mongooseConn: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } | undefined;
 }
 
-const client = new MongoClient(uri);
-const clientPromise =
-  global._mongoClientPromise ?? (global._mongoClientPromise = client.connect());
+const globalConn = global.mongooseConn ?? { conn: null, promise: null };
 
-let cachedDb: Db | null = null;
-
-export async function getDb() {
-  if (cachedDb) return cachedDb;
-  const connectedClient = await clientPromise;
-  cachedDb = connectedClient.db();
-  return cachedDb;
+export async function connectDb() {
+  if (globalConn.conn) return globalConn.conn;
+  if (!globalConn.promise) {
+    globalConn.promise = mongoose.connect(uri, {
+      bufferCommands: false,
+    });
+  }
+  globalConn.conn = await globalConn.promise;
+  global.mongooseConn = globalConn;
+  return globalConn.conn;
 }
-
-export async function getMongoClient() {
-  return clientPromise;
-}
-
-export default clientPromise;

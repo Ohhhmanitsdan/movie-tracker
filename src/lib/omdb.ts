@@ -9,7 +9,7 @@ if (!apiKey) {
 const OMDB_BASE = "https://www.omdbapi.com/";
 
 const mapType = (type: string | undefined): MediaType =>
-  type === "series" ? "tv" : "movie";
+  type === "series" ? "series" : "movie";
 
 const toYear = (year?: string | null) => {
   if (!year) return null;

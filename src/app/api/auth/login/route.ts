@@ -1,75 +1,34 @@
 import { NextResponse, type NextRequest } from "next/server";
-import bcrypt from "bcryptjs";
-import {
-  buildSessionForUser,
-  clearSessionCookie,
-} from "@/lib/auth";
-import { ensureSeedUser, findUserByUsername } from "@/lib/users";
+import { rateLimit } from "@/lib/rate-limit";
+import { establishSession, findUserByUsername, verifyPassword } from "@/lib/auth";
+import { loginSchema } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as {
-    username?: string;
-    password?: string;
-  };
+  const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+  if (!rateLimit(`login:${ip}`)) {
+    return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  }
 
-  const rawUsername = typeof body.username === "string" ? body.username : "";
-  const username = rawUsername.trim().toLowerCase();
-  const password = typeof body.password === "string" ? body.password : "";
+  const json = await request.json().catch(() => null);
+  const parsed = loginSchema.safeParse(json);
 
-  if (!username || !password) {
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: "Username and password are required." },
+      { error: "Invalid credentials." },
       { status: 400 },
     );
   }
 
-  await ensureSeedUser();
-
-  const user = await findUserByUsername(username);
+  const user = await findUserByUsername(parsed.data.username);
   if (!user) {
-    const res = NextResponse.json(
-      { error: "Invalid credentials." },
-      { status: 401 },
-    );
-    const cleared = clearSessionCookie();
-    res.cookies.set(cleared.name, cleared.value, cleared.options);
-    return res;
+    return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
   }
 
-  const passwordMatch = await bcrypt.compare(password, user.passwordHash);
-  if (!passwordMatch) {
-    const res = NextResponse.json(
-      { error: "Invalid credentials." },
-      { status: 401 },
-    );
-    const cleared = clearSessionCookie();
-    res.cookies.set(cleared.name, cleared.value, cleared.options);
-    return res;
+  const isValid = await verifyPassword(user, parsed.data.password);
+  if (!isValid) {
+    return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
   }
 
-  if (user.status !== "active") {
-    const res = NextResponse.json(
-      { error: "User is disabled." },
-      { status: 403 },
-    );
-    const cleared = clearSessionCookie();
-    res.cookies.set(cleared.name, cleared.value, cleared.options);
-    return res;
-  }
-
-  try {
-    const { session, cookie } = await buildSessionForUser(user);
-    const response = NextResponse.json({ session });
-    response.cookies.set(cookie.name, cookie.value, cookie.options);
-    return response;
-  } catch (error) {
-    console.error("Failed to create session", error);
-    const res = NextResponse.json(
-      { error: "Unable to create session." },
-      { status: 500 },
-    );
-    const cleared = clearSessionCookie();
-    res.cookies.set(cleared.name, cleared.value, cleared.options);
-    return res;
-  }
+  const sessionUser = await establishSession(user);
+  return NextResponse.json({ user: sessionUser });
 }

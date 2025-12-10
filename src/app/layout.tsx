@@ -12,9 +12,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Watchlist for Two",
+  title: "Collaborative Watchlist",
   description:
-    "A private shared watchlist for two friends to track movies and TV shows together.",
+    "A shared watchlist for movies and shows with sign-up/sign-in, invites, ratings, drag-to-prioritize, and random picks.",
 };
 
 export default function RootLayout({

@@ -1,37 +1,36 @@
-export type UserRole = "user" | "admin";
-
-export type UserStatus = "active" | "disabled";
-
 export type SessionUser = {
   id: string;
   username: string;
-  role: UserRole;
-  status: UserStatus;
-  sessionVersion: number;
-  secretClearance: boolean;
+  email?: string;
 };
 
-export type MediaType = "movie" | "tv";
+export type MediaType = "movie" | "series";
 
-export type WatchStatus = "want_to_watch" | "watching" | "watched";
+export type WatchlistSummary = {
+  id: string;
+  name: string;
+  ownerId: string;
+  memberCount: number;
+  visibility: "private" | "link";
+  inviteCode: string;
+  createdAt: string;
+};
 
 export type WatchItem = {
   id: string;
-  imdbId: string;
-  type: MediaType;
+  watchlistId: string;
   title: string;
-  posterUrl: string | null;
-  overview: string | null;
-  trailerUrl: string | null;
+  type: MediaType;
   year: number | null;
-  genres: string[];
-  status: WatchStatus;
-  ratingSkulls: number | null;
-  notes: string | null;
+  poster: string | null;
+  genre: string[];
+  synopsis: string | null;
+  omdbId: string | null;
+  runtime: string | null;
+  addedBy: string;
+  starRating: number | null;
   orderIndex: number;
-  createdBy: string | null;
   createdAt: string;
-  updatedAt: string;
 };
 
 export type SearchResult = {

@@ -1,127 +1,117 @@
-import { ObjectId, type Collection } from "mongodb";
-import { getDb } from "./db";
-import type { MediaType, MediaDetails, WatchItem, WatchStatus } from "./types";
+import { connectDb } from "./db";
+import { WatchItem, type WatchItemDocument } from "./models/watchitem";
+import { Watchlist } from "./models/watchlist";
 
-type WatchItemDoc = {
-  _id: ObjectId;
-  imdbId: string;
-  type: MediaType;
+export type WatchItemDto = {
+  id: string;
+  watchlistId: string;
   title: string;
-  posterUrl: string | null;
-  overview: string | null;
-  trailerUrl: string | null;
+  type: "movie" | "series";
   year: number | null;
-  genres: string[];
-  status: WatchStatus;
-  ratingSkulls: number | null;
-  notes: string | null;
+  poster: string | null;
+  genre: string[];
+  synopsis: string | null;
+  omdbId: string | null;
+  runtime: string | null;
+  addedBy: string;
+  starRating: number | null;
   orderIndex: number;
-  createdBy: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
 };
 
-const collectionName = "watchItems";
-
-async function watchItemsCollection(): Promise<Collection<WatchItemDoc>> {
-  const db = await getDb();
-  return db.collection<WatchItemDoc>(collectionName);
-}
-
-export function serializeWatchItem(doc: WatchItemDoc): WatchItem {
+function serialize(item: WatchItemDocument): WatchItemDto {
   return {
-    id: doc._id.toString(),
-    imdbId: doc.imdbId,
-    type: doc.type,
-    title: doc.title,
-    posterUrl: doc.posterUrl,
-    overview: doc.overview,
-    trailerUrl: doc.trailerUrl,
-    year: doc.year,
-    genres: doc.genres,
-    status: doc.status,
-    ratingSkulls: doc.ratingSkulls,
-    notes: doc.notes,
-    orderIndex: doc.orderIndex,
-    createdBy: doc.createdBy,
-    createdAt: doc.createdAt.toISOString(),
-    updatedAt: doc.updatedAt.toISOString(),
-  };
-}
-
-export async function getWatchItems(): Promise<WatchItem[]> {
-  const col = await watchItemsCollection();
-  const items = await col.find({}).sort({ orderIndex: 1 }).toArray();
-  return items.map(serializeWatchItem);
-}
-
-export type CreateWatchItemInput = MediaDetails & {
-  notes?: string | null;
-};
-
-export async function createWatchItem(
-  item: CreateWatchItemInput,
-  createdBy: string | null,
-): Promise<WatchItem> {
-  const col = await watchItemsCollection();
-  const highestOrder = await col
-    .find({})
-    .sort({ orderIndex: -1 })
-    .limit(1)
-    .next();
-  const orderIndex = (highestOrder?.orderIndex ?? -10) + 10;
-
-  const now = new Date();
-  const doc: Omit<WatchItemDoc, "_id"> = {
-    imdbId: item.imdbId,
-    type: item.type,
+    id: item._id.toString(),
+    watchlistId: item.watchlistId,
     title: item.title,
-    posterUrl: item.posterUrl ?? null,
-    overview: item.overview ?? null,
-    trailerUrl: item.trailerUrl ?? null,
+    type: item.type,
     year: item.year ?? null,
-    genres: item.genres ?? [],
-    status: "want_to_watch",
-    ratingSkulls: null,
-    notes: item.notes ?? null,
+    poster: item.poster ?? null,
+    genre: item.genre ?? [],
+    synopsis: item.synopsis ?? null,
+    omdbId: item.omdbId ?? null,
+    runtime: item.runtime ?? null,
+    addedBy: item.addedBy,
+    starRating: item.starRating ?? null,
+    orderIndex: item.orderIndex,
+    createdAt: item.createdAt.toISOString(),
+  };
+}
+
+export async function listItems(watchlistId: string, userId: string) {
+  await connectDb();
+  const wl = await Watchlist.findById(watchlistId).lean();
+  if (!wl) return null;
+  const isMember = wl.ownerId === userId || wl.memberIds.includes(userId);
+  if (!isMember) return null;
+  const items = await WatchItem.find({ watchlistId }).sort({ orderIndex: 1 }).lean();
+  return items.map((i) => serialize(i as WatchItemDocument));
+}
+
+export async function addItem(watchlistId: string, userId: string, payload: Omit<WatchItemDto, "id" | "orderIndex" | "createdAt" | "watchlistId" | "addedBy">) {
+  await connectDb();
+  const wl = await Watchlist.findById(watchlistId).lean();
+  if (!wl) return null;
+  const isMember = wl.ownerId === userId || wl.memberIds.includes(userId);
+  if (!isMember) return null;
+  const highest = await WatchItem.find({ watchlistId }).sort({ orderIndex: -1 }).limit(1).lean<WatchItemDocument[]>();
+  const orderIndex = (highest[0]?.orderIndex ?? 0) + 10;
+  const item = await WatchItem.create({
+    watchlistId,
+    addedBy: userId,
     orderIndex,
-    createdBy,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  const result = await col.insertOne(doc);
-  return serializeWatchItem({ ...doc, _id: result.insertedId });
+    ...payload,
+  });
+  return serialize(item);
 }
 
-export type UpdateWatchItemInput = Partial<
-  Pick<WatchItemDoc, "status" | "ratingSkulls" | "notes" | "title" | "trailerUrl">
->;
-
-export async function updateWatchItem(id: string, updates: UpdateWatchItemInput) {
-  const col = await watchItemsCollection();
-  const objectId = new ObjectId(id);
-  const updatePayload = {
-    ...updates,
-    updatedAt: new Date(),
-  };
-  await col.updateOne({ _id: objectId }, { $set: updatePayload });
-  const updated = await col.findOne({ _id: objectId });
-  return updated ? serializeWatchItem(updated) : null;
+export async function updateRating(watchlistId: string, itemId: string, userId: string, starRating: number | null) {
+  await connectDb();
+  const wl = await Watchlist.findById(watchlistId).lean();
+  if (!wl) return null;
+  const isMember = wl.ownerId === userId || wl.memberIds.includes(userId);
+  if (!isMember) return null;
+  await WatchItem.updateOne({ _id: itemId, watchlistId }, { $set: { starRating } });
+  const updated = await WatchItem.findById(itemId).lean<WatchItemDocument | null>();
+  return updated ? serialize(updated) : null;
 }
 
-export async function reorderWatchItems(ids: string[]) {
-  const col = await watchItemsCollection();
+export async function reorderItems(watchlistId: string, userId: string, ids: string[]) {
+  await connectDb();
+  const wl = await Watchlist.findById(watchlistId).lean();
+  if (!wl) return null;
+  const isMember = wl.ownerId === userId || wl.memberIds.includes(userId);
+  if (!isMember) return null;
+
   const operations = ids.map((id, index) => ({
     updateOne: {
-      filter: { _id: new ObjectId(id) },
-      update: { $set: { orderIndex: index * 10, updatedAt: new Date() } },
+      filter: { _id: id, watchlistId },
+      update: { $set: { orderIndex: index * 10 } },
     },
   }));
+
   if (operations.length) {
-    await col.bulkWrite(operations);
+    await WatchItem.bulkWrite(operations);
   }
-  const reordered = await col.find({ _id: { $in: ids.map((id) => new ObjectId(id)) } }).toArray();
-  const sorted = reordered.sort((a, b) => a.orderIndex - b.orderIndex);
-  return sorted.map(serializeWatchItem);
+
+  const reordered = await WatchItem.find({ _id: { $in: ids }, watchlistId })
+    .sort({ orderIndex: 1 })
+    .lean<WatchItemDocument[]>();
+  return reordered.map((r) => serialize(r));
+}
+
+export async function randomItem(
+  watchlistId: string,
+  userId: string,
+  filters: { genre?: string; type?: "movie" | "series"; minRating?: number },
+) {
+  const items = await listItems(watchlistId, userId);
+  if (!items) return null;
+  let filtered = [...items];
+  if (filters.type) filtered = filtered.filter((i) => i.type === filters.type);
+  if (filters.genre) filtered = filtered.filter((i) => i.genre.includes(filters.genre!));
+  if (filters.minRating) filtered = filtered.filter((i) => (i.starRating ?? 0) >= filters.minRating!);
+  if (!filtered.length) return null;
+  const idx = Math.floor(Math.random() * filtered.length);
+  return filtered[idx];
 }

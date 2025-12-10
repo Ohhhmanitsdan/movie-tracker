@@ -3,11 +3,10 @@ import { authenticateRequest, clearSessionCookie } from "@/lib/auth";
 import { updateWatchItem, type UpdateWatchItemInput } from "@/lib/watch-items";
 import type { WatchStatus } from "@/lib/types";
 
-type Params = {
-  params: { id: string };
-};
-
-export async function PATCH(request: NextRequest, { params }: Params) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const auth = await authenticateRequest(request);
   if (auth.status !== "ok") {
     const res = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,7 +17,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     return res;
   }
 
-  const { id } = params;
+  const { id } = await params;
   const body = (await request.json()) as Partial<UpdateWatchItemInput>;
 
   const payload: UpdateWatchItemInput = {};

@@ -2,9 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { randomItem } from "@/lib/watch-items";
 
-type Params = { params: { id: string } };
-
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -14,7 +16,7 @@ export async function GET(request: NextRequest, { params }: Params) {
   const type = typeParam === "movie" || typeParam === "series" ? typeParam : undefined;
   const minRating = searchParams.get("minRating");
 
-  const item = await randomItem(params.id, user.id, {
+  const item = await randomItem(id, user.id, {
     genre,
     type,
     minRating: minRating ? Number(minRating) : undefined,

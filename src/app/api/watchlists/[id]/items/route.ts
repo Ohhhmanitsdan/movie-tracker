@@ -3,17 +3,23 @@ import { getCurrentUser } from "@/lib/auth";
 import { addItem, listItems } from "@/lib/watch-items";
 import { watchItemSchema } from "@/lib/validation";
 
-type Params = { params: { id: string } };
-
-export async function GET(_request: NextRequest, { params }: Params) {
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const items = await listItems(params.id, user.id);
+  const items = await listItems(id, user.id);
   if (!items) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ items });
 }
 
-export async function POST(request: NextRequest, { params }: Params) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -30,7 +36,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     );
   }
 
-  const item = await addItem(params.id, user.id, parsed.data);
+  const item = await addItem(id, user.id, parsed.data);
   if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ item });
 }

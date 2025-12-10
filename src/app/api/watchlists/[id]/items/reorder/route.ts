@@ -3,9 +3,11 @@ import { getCurrentUser } from "@/lib/auth";
 import { reorderSchema } from "@/lib/validation";
 import { reorderItems } from "@/lib/watch-items";
 
-type Params = { params: { id: string } };
-
-export async function POST(request: NextRequest, { params }: Params) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -15,7 +17,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Invalid reorder payload" }, { status: 400 });
   }
 
-  const items = await reorderItems(params.id, user.id, parsed.data.ids);
+  const items = await reorderItems(id, user.id, parsed.data.ids);
   if (!items) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ items });
 }

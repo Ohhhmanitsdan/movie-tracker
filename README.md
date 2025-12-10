@@ -3,7 +3,7 @@
 A private, shared watchlist for two friends to track movies and TV shows. Built with Next.js App Router, TypeScript, Tailwind, MongoDB, and OMDB for metadata.
 
 ## Features
-- Username/password login that issues a 2h JWT session in an HTTP-only, SameSite=None cookie (`epsilon_session` by default).
+- Username/password login that issues a 2h JWT session in an HTTP-only, SameSite=None cookie (default name `session_token`).
 - OMDB-powered search to auto-fill poster, synopsis, year, and genres (trailers not available in OMDB).
 - Drag-and-drop custom ordering that persists.
 - Skull ratings, status tracking, notes, filters, sorting, and a random picker that respects filters.
@@ -27,7 +27,7 @@ Fill the values:
 - `AUTH_USERNAME`: Username that can sign in.
 - `AUTH_PASSWORD_HASH`: Bcrypt hash for the password (generate with `node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"`).
 - `AUTH_ROLE`: `admin` or `user` (default `admin`), `AUTH_SESSION_VERSION` (bump to force logouts), `AUTH_SECRET_CLEARANCE` (optional flag), `AUTH_STATUS` (`active` or `disabled`).
-- `SESSION_COOKIE_NAME` and `SESSION_TTL_SECONDS` (optional overrides; default cookie name is `epsilon_session`, TTL is 7200s).
+- `SESSION_COOKIE_NAME` and `SESSION_TTL_SECONDS` (optional overrides; default cookie name is `session_token`, TTL is 7200s).
 - `DEV_FAKE_SESSION`: Set to `true` in development to bypass auth with a fake admin session (`DEV_FAKE_USERNAME` optional).
 
 3) Run the dev server

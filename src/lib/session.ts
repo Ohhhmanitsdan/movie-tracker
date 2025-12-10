@@ -1,4 +1,4 @@
-import { getIronSession, type IronSessionOptions } from "iron-session";
+import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 
 const sessionPassword = process.env.SESSION_PASSWORD || process.env.JWT_SECRET;
@@ -16,7 +16,7 @@ export type SessionData = {
   };
 };
 
-export const sessionOptions: IronSessionOptions = {
+export const sessionOptions: SessionOptions = {
   password: sessionPassword,
   cookieName: process.env.SESSION_COOKIE_NAME || "watchlist_session",
   cookieOptions: {

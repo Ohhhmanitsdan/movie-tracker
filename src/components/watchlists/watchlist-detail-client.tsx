@@ -56,7 +56,8 @@ export function WatchlistDetailClient({ watchlist, initialItems }: Props) {
     if (filters.type !== "all") list = list.filter((i) => i.type === filters.type);
     if (filters.genre !== "all") list = list.filter((i) => i.genre.includes(filters.genre));
     if (filters.minRating !== "all") {
-      list = list.filter((i) => (i.starRating ?? 0) >= filters.minRating);
+      const min = Number(filters.minRating);
+      list = list.filter((i) => (i.starRating ?? 0) >= min);
     }
     return list;
   }, [items, filters]);

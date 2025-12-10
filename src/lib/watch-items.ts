@@ -62,12 +62,13 @@ export async function addItem(
   if (!isMember) return null;
   const highest = await WatchItem.find({ watchlistId }).sort({ orderIndex: -1 }).limit(1).lean<WatchItemDocument[]>();
   const orderIndex = (highest[0]?.orderIndex ?? 0) + 10;
+  const { starRating = null, ...rest } = payload;
   const item = await WatchItem.create({
     watchlistId,
     addedBy: userId,
     orderIndex,
-    starRating: payload.starRating ?? null,
-    ...payload,
+    starRating,
+    ...rest,
   });
   return serialize(item);
 }

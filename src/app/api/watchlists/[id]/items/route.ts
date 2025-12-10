@@ -36,7 +36,7 @@ export async function POST(
     );
   }
 
-  const item = await addItem(id, user.id, parsed.data);
+  const item = await addItem(id, user.id, { ...parsed.data, starRating: parsed.data.starRating ?? null });
   if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ item });
 }

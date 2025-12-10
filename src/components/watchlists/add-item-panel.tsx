@@ -58,8 +58,9 @@ export function AddItemPanel({ watchlistId, onAdded }: Props) {
       poster: details.posterUrl ?? null,
       genre: (details.genres as string[]) ?? [],
       synopsis: details.overview ?? null,
-      omdbId,
+      omdbId: imdbId,
       runtime: null,
+      starRating: null,
     };
 
     const res = await fetch(`/api/watchlists/${watchlistId}/items`, {

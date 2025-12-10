@@ -6,6 +6,8 @@ if (!uri) {
   throw new Error("Missing MONGODB_URI. Add it to your environment.");
 }
 
+const mongoUri: string = uri;
+
 declare global {
   var mongooseConn: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } | undefined;
 }
@@ -15,7 +17,7 @@ const globalConn = global.mongooseConn ?? { conn: null, promise: null };
 export async function connectDb() {
   if (globalConn.conn) return globalConn.conn;
   if (!globalConn.promise) {
-    globalConn.promise = mongoose.connect(uri, {
+    globalConn.promise = mongoose.connect(mongoUri, {
       bufferCommands: false,
     });
   }

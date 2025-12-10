@@ -1,6 +1,6 @@
 import type { MediaDetails, MediaType, SearchResult } from "./types";
 
-const apiKey = process.env.OMDB_API_KEY;
+const apiKey = process.env.OMDB_API_KEY || "";
 
 if (!apiKey) {
   throw new Error("Missing OMDB_API_KEY. Add it to your environment.");

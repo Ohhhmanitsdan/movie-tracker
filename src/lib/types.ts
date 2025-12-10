@@ -21,6 +21,7 @@ export type WatchItem = {
   watchlistId: string;
   title: string;
   type: MediaType;
+  status: "queue" | "watching" | "watched";
   year: number | null;
   poster: string | null;
   genre: string[];

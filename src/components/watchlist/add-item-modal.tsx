@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { TMDBSearchResult, WatchItem } from "@/lib/types";
+import type { SearchResult, WatchItem } from "@/lib/types";
 
 type Props = {
   isOpen: boolean;
@@ -14,7 +14,7 @@ type SearchType = "multi" | "movie" | "tv";
 export function AddItemModal({ isOpen, onClose, onAdded }: Props) {
   const [query, setQuery] = useState("");
   const [searchType, setSearchType] = useState<SearchType>("multi");
-  const [results, setResults] = useState<TMDBSearchResult[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,25 +27,25 @@ export function AddItemModal({ isOpen, onClose, onAdded }: Props) {
     setLoading(true);
     try {
       const res = await fetch(
-        `/api/tmdb/search?query=${encodeURIComponent(query)}&type=${searchType}`,
+        `/api/omdb/search?query=${encodeURIComponent(query)}&type=${searchType}`,
       );
       if (!res.ok) throw new Error("Search failed");
-      const data = (await res.json()) as TMDBSearchResult[];
+      const data = (await res.json()) as SearchResult[];
       setResults(data);
     } catch (err) {
       console.error(err);
-      setError("Unable to search TMDB right now.");
+      setError("Unable to search OMDB right now.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAdd = async (result: TMDBSearchResult) => {
+  const handleAdd = async (result: SearchResult) => {
     setSubmitting(true);
     setError(null);
     try {
       const detailsRes = await fetch(
-        `/api/tmdb/details?tmdbId=${result.tmdbId}&type=${result.type}`,
+        `/api/omdb/details?imdbId=${result.imdbId}&type=${result.type}`,
       );
       if (!detailsRes.ok) throw new Error("Failed to fetch details");
       const details = await detailsRes.json();
@@ -77,7 +77,7 @@ export function AddItemModal({ isOpen, onClose, onAdded }: Props) {
             <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
               Add a title
             </p>
-            <h3 className="text-lg font-semibold text-slate-900">Search TMDB</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Search OMDB</h3>
           </div>
           <button
             type="button"
@@ -134,7 +134,7 @@ export function AddItemModal({ isOpen, onClose, onAdded }: Props) {
             ) : (
               results.map((result) => (
                 <button
-                  key={`${result.tmdbId}-${result.type}`}
+                  key={`${result.imdbId}-${result.type}`}
                   type="button"
                   onClick={() => handleAdd(result)}
                   disabled={submitting}

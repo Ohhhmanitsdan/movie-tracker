@@ -4,7 +4,7 @@ export type WatchStatus = "want_to_watch" | "watching" | "watched";
 
 export type WatchItem = {
   id: string;
-  tmdbId: string;
+  imdbId: string;
   type: MediaType;
   title: string;
   posterUrl: string | null;
@@ -21,8 +21,8 @@ export type WatchItem = {
   updatedAt: string;
 };
 
-export type TMDBSearchResult = {
-  tmdbId: string;
+export type SearchResult = {
+  imdbId: string;
   type: MediaType;
   title: string;
   overview: string | null;
@@ -30,7 +30,7 @@ export type TMDBSearchResult = {
   posterUrl: string | null;
 };
 
-export type TMDBDetails = TMDBSearchResult & {
+export type MediaDetails = SearchResult & {
   genres: string[];
   trailerUrl: string | null;
 };

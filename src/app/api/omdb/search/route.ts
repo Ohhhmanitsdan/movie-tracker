@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { searchTMDB } from "@/lib/tmdb";
+import { searchOMDB } from "@/lib/omdb";
 import type { MediaType } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
@@ -19,10 +19,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const results = await searchTMDB(query, typeParam);
+    const results = await searchOMDB(query, typeParam);
     return NextResponse.json(results);
   } catch (error) {
-    console.error("TMDB search failed", error);
-    return NextResponse.json({ error: "TMDB search failed" }, { status: 500 });
+    console.error("OMDB search failed", error);
+    return NextResponse.json({ error: "OMDB search failed" }, { status: 500 });
   }
 }

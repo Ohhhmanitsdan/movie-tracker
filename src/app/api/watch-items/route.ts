@@ -27,9 +27,9 @@ export async function POST(request: Request) {
   const body = (await request.json()) as Partial<CreateWatchItemInput>;
   const type = body.type as MediaType | undefined;
 
-  if (!body.tmdbId || !type || !body.title) {
+  if (!body.imdbId || !type || !body.title) {
     return NextResponse.json(
-      { error: "tmdbId, type, and title are required" },
+      { error: "imdbId, type, and title are required" },
       { status: 400 },
     );
   }
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   try {
     const item = await createWatchItem(
       {
-        tmdbId: body.tmdbId,
+        imdbId: body.imdbId,
         type,
         title: body.title,
         overview: body.overview ?? null,

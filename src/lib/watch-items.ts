@@ -1,15 +1,10 @@
 import { ObjectId, type Collection } from "mongodb";
 import { getDb } from "./db";
-import type {
-  MediaType,
-  TMDBDetails,
-  WatchItem,
-  WatchStatus,
-} from "./types";
+import type { MediaType, MediaDetails, WatchItem, WatchStatus } from "./types";
 
 type WatchItemDoc = {
   _id: ObjectId;
-  tmdbId: string;
+  imdbId: string;
   type: MediaType;
   title: string;
   posterUrl: string | null;
@@ -36,7 +31,7 @@ async function watchItemsCollection(): Promise<Collection<WatchItemDoc>> {
 export function serializeWatchItem(doc: WatchItemDoc): WatchItem {
   return {
     id: doc._id.toString(),
-    tmdbId: doc.tmdbId,
+    imdbId: doc.imdbId,
     type: doc.type,
     title: doc.title,
     posterUrl: doc.posterUrl,
@@ -60,7 +55,7 @@ export async function getWatchItems(): Promise<WatchItem[]> {
   return items.map(serializeWatchItem);
 }
 
-export type CreateWatchItemInput = TMDBDetails & {
+export type CreateWatchItemInput = MediaDetails & {
   notes?: string | null;
 };
 
@@ -78,7 +73,7 @@ export async function createWatchItem(
 
   const now = new Date();
   const doc: Omit<WatchItemDoc, "_id"> = {
-    tmdbId: item.tmdbId,
+    imdbId: item.imdbId,
     type: item.type,
     title: item.title,
     posterUrl: item.posterUrl ?? null,

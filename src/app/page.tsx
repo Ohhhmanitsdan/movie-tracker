@@ -4,7 +4,7 @@ import { SignInButton } from "@/components/auth-buttons";
 import { authOptions } from "@/lib/auth";
 
 const features = [
-  "Auto-fill titles with TMDB posters, genres, and synopsis.",
+  "Auto-fill titles with OMDB posters, genres, and synopsis.",
   "Drag-and-drop to prioritize what to watch next.",
   "Rate with skulls, filter by mood, and pick a random suggestion.",
   "One private list for the two of you—no invites needed.",
@@ -30,7 +30,7 @@ export default async function Home() {
                 Plan the next movie night—together.
               </h1>
               <p className="max-w-2xl text-lg leading-7 text-slate-600">
-                Keep a single shared watchlist for movies and shows, auto-fill details from TMDB, and
+                Keep a single shared watchlist for movies and shows, auto-fill details from OMDB, and
                 let the app pick something when you can&apos;t decide.
               </p>
             </div>

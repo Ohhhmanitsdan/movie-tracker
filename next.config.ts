@@ -5,11 +5,15 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "image.tmdb.org",
+        hostname: "m.media-amazon.com",
       },
       {
         protocol: "https",
-        hostname: "i.ytimg.com",
+        hostname: "img.omdbapi.com",
+      },
+      {
+        protocol: "https",
+        hostname: "ia.media-imdb.com",
       },
     ],
   },

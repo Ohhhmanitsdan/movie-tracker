@@ -333,7 +333,7 @@ export default function WatchlistClient({ initialItems, userEmail }: Props) {
                 Nothing in your watchlist yet.
               </p>
               <p className="text-sm text-slate-500">
-                Search TMDB, auto-fill the details, and start planning your next watch.
+                Search OMDB, auto-fill the details, and start planning your next watch.
               </p>
               <div className="mt-4 flex justify-center">
                 <button

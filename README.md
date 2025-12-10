@@ -1,51 +1,55 @@
-# Watch Buddy
+# Watchlist for Two
 
-A single-repo Next.js application that lets two friends share a movie backlog, rate what they watch, get TMDb-powered artwork/trailers, pull recommendations based on their ratings, and spin a random pick when nobody can decide.
+A private, shared watchlist for two friends to track movies and TV shows. Built with Next.js App Router, TypeScript, Tailwind, MongoDB, NextAuth, and TMDB for metadata.
 
 ## Features
-- Email/password login for two default users (editable via the JSON data file) with secure session cookies.
-- Add movies by title – details, posters, trailers, and descriptions are fetched from TMDb automatically.
-- Shared prioritized queue with up/down ordering, completion tracking, and per-user + average ratings.
-- Smart recommendation shelf sourced from the highest-rated titles on your list.
-- Random movie picker to break stalemates.
+- Google sign-in with NextAuth; every authenticated user sees the same shared list.
+- TMDB-powered search to auto-fill poster, synopsis, year, genres, and a best-effort trailer link.
+- Drag-and-drop custom ordering that persists.
+- Skull ratings, status tracking, notes, filters, sorting, and a random picker that respects filters.
+- Vercel-ready configuration with remote image domains and server-side TMDB proxy routes.
 
-## Getting started
-1. **Install dependencies**
-   ```bash
-   npm install
-   ```
-2. **Environment variables**
-   - Copy `.env.local.example` to `.env.local` and add your [`TMDb API key`](https://developer.themoviedb.org/reference/intro/getting-started).
-3. **Run the dev server**
-   ```bash
-   npm run dev
-   ```
-   Visit `http://localhost:3000` in your browser.
+## Getting Started
 
-The app stores data in `data/movie-tracker.json`. The file is created automatically; delete it if you want a fresh start.
-
-## Default logins
-| Name     | Email                    | Password     |
-|----------|--------------------------|--------------|
-| Daniel   | `daniel@watchbuddy.dev`  | `watchbuddy1`|
-| Co-Pilot | `copilot@watchbuddy.dev` | `watchbuddy2`|
-
-Update or add users directly in the `users` array inside `data/movie-tracker.json` if needed.
-
-## Project structure
-```
-app/               # Next.js routes (UI + API)
-components/        # Client-side React components
-lib/               # Database, auth, TMDb helpers
-public/            # Static assets
+1) Install dependencies
+```bash
+npm install
 ```
 
-## Scripts
-- `npm run dev` – start Next.js in dev mode.
-- `npm run build` – create an optimized production build.
-- `npm run start` – run the production build.
-- `npm run lint` – lint with Next.js ESLint config.
+2) Copy environment variables
+```bash
+cp .env.local.example .env.local
+```
+Fill the values:
+- `MONGODB_URI`: MongoDB Atlas connection string.
+- `NEXTAUTH_SECRET`: Any strong secret (use `openssl rand -base64 32`).
+- `NEXTAUTH_URL`: Usually `http://localhost:3000` in development.
+- `TMDB_API_KEY`: TMDB v3 API key.
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`: From Google Cloud OAuth credentials (Authorized redirect: `http://localhost:3000/api/auth/callback/google`).
+
+3) Run the dev server
+```bash
+npm run dev
+```
+Open `http://localhost:3000` and sign in with Google.
+
+## API Routes (App Router)
+- `GET /api/tmdb/search?query=&type=movie|tv|multi`
+- `GET /api/tmdb/details?tmdbId=&type=movie|tv`
+- `GET /api/watch-items` – fetch list
+- `POST /api/watch-items` – create item from TMDB details
+- `PATCH /api/watch-items/:id` – update status/rating/notes
+- `POST /api/watch-items/reorder` – persist drag order
+
+All routes require authentication; the TMDB key stays server-side.
+
+## Deploying to Vercel
+1. Push to a Git repo.
+2. Create a new Vercel project from the repo.
+3. Add the same environment variables in Vercel.
+4. Set `NEXTAUTH_URL` to your Vercel domain.
 
 ## Notes
-- Recommendations and metadata rely on TMDb. The API key is required for add/search/recommend flows.
-- Sessions last 14 days and are revoked on logout or if the cookie/token pair no longer matches.
+- Custom drag order is available when filters are cleared and “Custom order” sorting is selected.
+- Order indices are renumbered on each drop for stability (0, 10, 20, ...).
+- MongoDB adapter is used for NextAuth sessions and user data.

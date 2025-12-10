@@ -27,7 +27,7 @@ export default async function WatchlistsPage({ searchParams }: Props) {
         </div>
       </header>
 
-      <WatchlistList initialWatchlists={watchlists} />
+      <WatchlistList initialWatchlists={watchlists} username={user.username} />
     </main>
   );
 }

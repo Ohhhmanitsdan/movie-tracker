@@ -6,9 +6,10 @@ import type { WatchlistSummary } from "@/lib/types";
 
 type Props = {
   initialWatchlists: WatchlistSummary[];
+  username?: string;
 };
 
-export function WatchlistList({ initialWatchlists }: Props) {
+export function WatchlistList({ initialWatchlists, username }: Props) {
   const router = useRouter();
   const [watchlists, setWatchlists] = useState(initialWatchlists);
   const [name, setName] = useState("");
@@ -62,57 +63,76 @@ export function WatchlistList({ initialWatchlists }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <form className="space-y-2" onSubmit={handleCreate}>
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[var(--text)]">Create a watchlist</h3>
-            <span className="text-xs text-[var(--text2)]">Flow A</span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text2)]">
+            Your watchlists
+          </p>
+          <h2 className="text-2xl font-bold text-[var(--text)]">Welcome back{username ? `, ${username}` : ""}</h2>
+        </div>
+        <div className="flex items-center gap-3 text-sm text-[var(--text2)]">
+          <div className="rounded-full bg-[var(--elevated)] px-3 py-1">
+            {watchlists.length} {watchlists.length === 1 ? "list" : "lists"}
           </div>
-          <div className="flex gap-2">
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
+        <div className="card space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-[var(--text2)]">Flow A</p>
+              <h3 className="text-lg font-semibold text-[var(--text)]">Create a watchlist</h3>
+              <p className="text-sm text-[var(--text2)]">
+                Name your list and we&apos;ll generate an invite link and code.
+              </p>
+            </div>
+          </div>
+          <form className="space-y-3" onSubmit={handleCreate}>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="modern flex-1"
+              className="modern w-full"
               placeholder="Friday Night Picks"
               required
             />
             <button
               type="submit"
               disabled={creating}
-              className="btn btn-primary"
+              className="btn btn-primary w-full"
             >
-              {creating ? "Creating..." : "Create"}
+              {creating ? "Creating..." : "Create watchlist"}
             </button>
-          </div>
-          <p className="text-xs text-[var(--text2)]">
-            You&apos;ll get an invite link and join code to share.
-          </p>
-        </form>
-        <form className="space-y-2" onSubmit={handleJoin}>
+          </form>
+        </div>
+
+        <div className="card space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[var(--text)]">Join with a code</h3>
-            <span className="text-xs text-[var(--text2)]">Flow B</span>
+            <div>
+              <p className="text-xs uppercase tracking-wide text-[var(--text2)]">Flow B</p>
+              <h3 className="text-lg font-semibold text-[var(--text)]">Join with a code</h3>
+              <p className="text-sm text-[var(--text2)]">
+                Paste the join code or token shared with you.
+              </p>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <form className="space-y-3" onSubmit={handleJoin}>
             <input
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="modern flex-1"
+              className="modern w-full"
               placeholder="Invite code"
               required
             />
             <button
               type="submit"
               disabled={joining}
-              className="btn btn-ghost"
+              className="btn btn-ghost w-full"
             >
-              {joining ? "Joining..." : "Join"}
+              {joining ? "Joining..." : "Join watchlist"}
             </button>
-          </div>
-          <p className="text-xs text-[var(--text2)]">
-            Paste the join code or invite link token shared with you.
-          </p>
-        </form>
+          </form>
+        </div>
       </div>
 
       {error && (
@@ -121,14 +141,10 @@ export function WatchlistList({ initialWatchlists }: Props) {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {watchlists.map((watchlist) => (
-          <button
-            key={watchlist.id}
-            onClick={() => router.push(`/app/watchlists/${watchlist.id}`)}
-            className="card flex flex-col items-start gap-2 text-left"
-          >
-            <div className="flex w-full items-center justify-between gap-2">
+          <div key={watchlist.id} className="card flex flex-col gap-3">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">
                 <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
                 {watchlist.visibility === "link" ? "Link invite" : "Private"}
@@ -137,17 +153,43 @@ export function WatchlistList({ initialWatchlists }: Props) {
                 {new Date(watchlist.createdAt).toLocaleDateString()}
               </span>
             </div>
-            <h3 className="text-lg font-semibold text-[var(--text)]">{watchlist.name}</h3>
-            <p className="text-sm text-[var(--text2)]">
-              {watchlist.memberCount} {watchlist.memberCount === 1 ? "member" : "members"} • Invite
-              code: <span className="font-mono text-[var(--text)]">{watchlist.inviteCode}</span>
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-[var(--elevated)] px-2 py-1 text-xs font-semibold text-[var(--text)]">
-                Open watchlist
-              </span>
+            <div>
+              <h3 className="text-lg font-semibold text-[var(--text)]">{watchlist.name}</h3>
+              <p className="text-sm text-[var(--text2)]">
+                {watchlist.memberCount} {watchlist.memberCount === 1 ? "member" : "members"}
+              </p>
             </div>
-          </button>
+            <div className="rounded-xl bg-[var(--elevated)] px-3 py-2 text-xs text-[var(--text2)] flex items-center justify-between gap-2 font-mono">
+              <span className="truncate">{watchlist.inviteCode}</span>
+              <button
+                type="button"
+                className="text-[var(--primary)] hover:text-[var(--text)]"
+                onClick={() => navigator.clipboard.writeText(watchlist.inviteCode)}
+              >
+                Copy
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => router.push(`/app/watchlists/${watchlist.id}`)}
+                className="btn btn-primary w-full"
+              >
+                Open
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost w-full"
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/app/watchlists/${watchlist.id}?code=${watchlist.inviteCode}`,
+                  )
+                }
+              >
+                Copy link
+              </button>
+            </div>
+          </div>
         ))}
       </div>
 

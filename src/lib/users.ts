@@ -1,4 +1,4 @@
-import { ObjectId, type Collection } from "mongodb";
+import { ObjectId, type Collection, type OptionalId } from "mongodb";
 import { getDb } from "./db";
 import type { UserRole, UserStatus } from "./types";
 
@@ -84,7 +84,7 @@ export async function ensureSeedUser(): Promise<UserRecord | null> {
   const now = new Date();
 
   if (!existing) {
-    const doc: Omit<UserDoc, "_id"> = {
+    const doc: OptionalId<UserDoc> = {
       username,
       passwordHash,
       role,

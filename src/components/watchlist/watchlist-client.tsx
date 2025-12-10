@@ -34,10 +34,10 @@ const defaultFilters: Filters = {
 
 type Props = {
   initialItems: WatchItem[];
-  userEmail: string;
+  username: string;
 };
 
-export default function WatchlistClient({ initialItems, userEmail }: Props) {
+export default function WatchlistClient({ initialItems, username }: Props) {
   const [items, setItems] = useState<WatchItem[]>(initialItems);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -218,7 +218,7 @@ export default function WatchlistClient({ initialItems, userEmail }: Props) {
               Watchlist for Two
             </p>
             <h1 className="text-2xl font-semibold text-slate-900">{headerTitle}</h1>
-            <p className="text-sm text-slate-500">Signed in as {userEmail}</p>
+            <p className="text-sm text-slate-500">Signed in as {username}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <button

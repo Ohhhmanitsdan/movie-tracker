@@ -1,9 +1,9 @@
 # Watchlist for Two
 
-A private, shared watchlist for two friends to track movies and TV shows. Built with Next.js App Router, TypeScript, Tailwind, MongoDB, NextAuth, and OMDB for metadata.
+A private, shared watchlist for two friends to track movies and TV shows. Built with Next.js App Router, TypeScript, Tailwind, MongoDB, and OMDB for metadata.
 
 ## Features
-- Google sign-in with NextAuth; every authenticated user sees the same shared list.
+- Username/password login that issues a 2h JWT session in an HTTP-only, SameSite=None cookie (`epsilon_session` by default).
 - OMDB-powered search to auto-fill poster, synopsis, year, and genres (trailers not available in OMDB).
 - Drag-and-drop custom ordering that persists.
 - Skull ratings, status tracking, notes, filters, sorting, and a random picker that respects filters.
@@ -22,18 +22,24 @@ cp .env.local.example .env.local
 ```
 Fill the values:
 - `MONGODB_URI`: MongoDB Atlas connection string.
-- `NEXTAUTH_SECRET`: Any strong secret (use `openssl rand -base64 32`).
-- `NEXTAUTH_URL`: Usually `http://localhost:3000` in development.
 - `OMDB_API_KEY`: OMDB API key.
-- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`: From Google Cloud OAuth credentials (Authorized redirect: `http://localhost:3000/api/auth/callback/google`).
+- `JWT_SECRET`: Strong secret used to sign JWT sessions (e.g. `openssl rand -base64 32`).
+- `AUTH_USERNAME`: Username that can sign in.
+- `AUTH_PASSWORD_HASH`: Bcrypt hash for the password (generate with `node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"`).
+- `AUTH_ROLE`: `admin` or `user` (default `admin`), `AUTH_SESSION_VERSION` (bump to force logouts), `AUTH_SECRET_CLEARANCE` (optional flag), `AUTH_STATUS` (`active` or `disabled`).
+- `SESSION_COOKIE_NAME` and `SESSION_TTL_SECONDS` (optional overrides; default cookie name is `epsilon_session`, TTL is 7200s).
+- `DEV_FAKE_SESSION`: Set to `true` in development to bypass auth with a fake admin session (`DEV_FAKE_USERNAME` optional).
 
 3) Run the dev server
 ```bash
 npm run dev
 ```
-Open `http://localhost:3000` and sign in with Google.
+Open `http://localhost:3000` and sign in with your username/password.
 
 ## API Routes (App Router)
+- `POST /api/auth/login` – exchange username/password for a session cookie
+- `GET /api/auth/session` – return the current session payload
+- `POST /api/auth/logout` – clear the session cookie
 - `GET /api/omdb/search?query=&type=movie|tv|multi`
 - `GET /api/omdb/details?imdbId=&type=movie|tv`
 - `GET /api/watch-items` – fetch list
@@ -41,15 +47,15 @@ Open `http://localhost:3000` and sign in with Google.
 - `PATCH /api/watch-items/:id` – update status/rating/notes
 - `POST /api/watch-items/reorder` – persist drag order
 
-All routes require authentication; the OMDB key stays server-side.
+All routes require the session cookie; the OMDB key stays server-side.
 
 ## Deploying to Vercel
 1. Push to a Git repo.
 2. Create a new Vercel project from the repo.
 3. Add the same environment variables in Vercel.
-4. Set `NEXTAUTH_URL` to your Vercel domain.
 
 ## Notes
 - Custom drag order is available when filters are cleared and “Custom order” sorting is selected.
 - Order indices are renumbered on each drop for stability (0, 10, 20, ...).
-- MongoDB adapter is used for NextAuth sessions and user data.
+- Sessions are httpOnly/secure (except for dev) and refresh automatically when user details change.
+- In development the cookie uses `SameSite=Lax` with `secure=false` so it works over `http://localhost`; production uses `SameSite=None` + `Secure`.

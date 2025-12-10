@@ -1,7 +1,6 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { SignInButton } from "@/components/auth-buttons";
-import { authOptions } from "@/lib/auth";
+import { LoginForm } from "@/components/auth-buttons";
+import { getSessionFromCookies } from "@/lib/auth";
 
 const features = [
   "Auto-fill titles with OMDB posters, genres, and synopsis.",
@@ -11,7 +10,7 @@ const features = [
 ];
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
+  const session = await getSessionFromCookies();
   if (session) {
     redirect("/watchlist");
   }
@@ -34,9 +33,14 @@ export default async function Home() {
                 let the app pick something when you can&apos;t decide.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-4">
-              <SignInButton />
-              <span className="text-sm text-slate-500">Google sign-in only. Your list stays private.</span>
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-slate-800">
+                Sign in with your shared credentials
+              </p>
+              <LoginForm />
+              <p className="text-xs text-slate-500">
+                Passwords stay server-side; sessions use a 2h HTTP-only, SameSite=None cookie.
+              </p>
             </div>
             <ul className="grid gap-3 rounded-2xl bg-white/60 p-4 ring-1 ring-slate-100 sm:grid-cols-2">
               {features.map((feature) => (

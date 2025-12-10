@@ -1,3 +1,16 @@
+export type UserRole = "user" | "admin";
+
+export type UserStatus = "active" | "disabled";
+
+export type SessionUser = {
+  id: string;
+  username: string;
+  role: UserRole;
+  status: UserStatus;
+  sessionVersion: number;
+  secretClearance: boolean;
+};
+
 export type MediaType = "movie" | "tv";
 
 export type WatchStatus = "want_to_watch" | "watching" | "watched";

@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
-import { authOptions } from "@/lib/auth";
+import { NextResponse, type NextRequest } from "next/server";
+import { authenticateRequest, clearSessionCookie } from "@/lib/auth";
 import { updateWatchItem, type UpdateWatchItemInput } from "@/lib/watch-items";
 import type { WatchStatus } from "@/lib/types";
 
@@ -8,10 +7,15 @@ type Params = {
   params: { id: string };
 };
 
-export async function PATCH(request: Request, { params }: Params) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PATCH(request: NextRequest, { params }: Params) {
+  const auth = await authenticateRequest(request);
+  if (auth.status !== "ok") {
+    const res = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (auth.clearCookie) {
+      const cleared = clearSessionCookie();
+      res.cookies.set(cleared.name, cleared.value, cleared.options);
+    }
+    return res;
   }
 
   const { id } = params;
@@ -52,7 +56,11 @@ export async function PATCH(request: Request, { params }: Params) {
     if (!updated) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    return NextResponse.json(updated);
+    const res = NextResponse.json(updated);
+    if (auth.setCookie) {
+      res.cookies.set(auth.setCookie.name, auth.setCookie.value, auth.setCookie.options);
+    }
+    return res;
   } catch (error) {
     console.error("Error updating watch item", error);
     return NextResponse.json(

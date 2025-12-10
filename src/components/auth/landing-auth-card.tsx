@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import clsx from "clsx";
-
-type Mode = "signin" | "signup";
 
 type FieldErrors = Record<string, string[]>;
 
-export function AuthCard() {
+export function LandingAuthCard() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("signin");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -62,17 +59,16 @@ export function AuthCard() {
   return (
     <div className="w-full max-w-lg card">
       <div className="mb-4 flex gap-2 rounded-full bg-[var(--surface)] p-1 text-sm font-semibold">
-        {(["signin", "signup"] as Mode[]).map((tab) => (
+        {(["signin", "signup"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => setMode(tab)}
-            className={clsx(
-              "flex-1 rounded-full px-3 py-2 transition",
+            className={`flex-1 rounded-full px-3 py-2 transition ${
               mode === tab
                 ? "bg-[var(--elevated)] shadow-sm text-[var(--text)]"
-                : "text-[var(--text2)] hover:text-[var(--text)]",
-            )}
+                : "text-[var(--text2)] hover:text-[var(--text)]"
+            }`}
           >
             {tab === "signin" ? "Sign in" : "Create account"}
           </button>
@@ -116,9 +112,6 @@ export function AuthCard() {
           {fieldErrors.password && (
             <p className="text-xs text-[var(--danger)]">{fieldErrors.password[0]}</p>
           )}
-          <div className="text-xs text-[var(--text2)]">
-            {mode === "signin" ? "Forgot password? (coming soon)" : "Use 8+ characters."}
-          </div>
         </div>
 
         {mode === "signup" && (

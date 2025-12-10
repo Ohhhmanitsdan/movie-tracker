@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { AuthCard } from "@/components/auth/auth-card";
+import { LandingAuthCard } from "@/components/auth/landing-auth-card";
 import { WatchlistPreviewCard } from "@/components/landing/watchlist-preview-card";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -42,7 +42,7 @@ export default async function Home() {
 
       <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] items-start">
         <div id="auth-card">
-          <AuthCard />
+          <LandingAuthCard />
         </div>
         <WatchlistPreviewCard />
       </div>

@@ -2,10 +2,6 @@ import type { MediaDetails, MediaType, SearchResult } from "./types";
 
 const apiKey = process.env.OMDB_API_KEY || "";
 
-if (!apiKey) {
-  throw new Error("Missing OMDB_API_KEY. Add it to your environment.");
-}
-
 const OMDB_BASE = "https://www.omdbapi.com/";
 
 const mapType = (type: string | undefined): MediaType =>
@@ -18,6 +14,9 @@ const toYear = (year?: string | null) => {
 };
 
 async function omdbFetch(params: Record<string, string>) {
+  if (!apiKey) {
+    throw new Error("Missing OMDB_API_KEY. Add it to your environment.");
+  }
   const url = new URL(OMDB_BASE);
   url.searchParams.set("apikey", apiKey);
   Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));

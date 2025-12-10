@@ -15,7 +15,7 @@ const WatchlistSchema = new Schema<WatchlistDocument>({
   ownerId: { type: String, required: true, index: true },
   memberIds: { type: [String], required: true, default: [] },
   visibility: { type: String, enum: ["private", "link"], default: "private" },
-  inviteCode: { type: String, required: true, index: true },
+  inviteCode: { type: String, required: true },
   createdAt: { type: Date, default: () => new Date() },
 });
 

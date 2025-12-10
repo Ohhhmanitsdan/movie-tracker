@@ -1,4 +1,4 @@
-import { ObjectId, type Collection, type OptionalId } from "mongodb";
+import { ObjectId, type Collection } from "mongodb";
 import { getDb } from "./db";
 import type { UserRole, UserStatus } from "./types";
 
@@ -84,7 +84,8 @@ export async function ensureSeedUser(): Promise<UserRecord | null> {
   const now = new Date();
 
   if (!existing) {
-    const doc: OptionalId<UserDoc> = {
+    const doc: UserDoc = {
+      _id: new ObjectId(),
       username,
       passwordHash,
       role,
@@ -94,8 +95,8 @@ export async function ensureSeedUser(): Promise<UserRecord | null> {
       createdAt: now,
       updatedAt: now,
     };
-    const result = await col.insertOne(doc);
-    return serializeUser({ ...doc, _id: result.insertedId });
+    await col.insertOne(doc);
+    return serializeUser(doc);
   }
 
   const updates: Partial<UserDoc> = {};

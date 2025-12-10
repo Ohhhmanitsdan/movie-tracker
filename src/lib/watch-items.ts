@@ -48,7 +48,13 @@ export async function listItems(watchlistId: string, userId: string) {
   return items.map((i) => serialize(i as WatchItemDocument));
 }
 
-export async function addItem(watchlistId: string, userId: string, payload: Omit<WatchItemDto, "id" | "orderIndex" | "createdAt" | "watchlistId" | "addedBy">) {
+export async function addItem(
+  watchlistId: string,
+  userId: string,
+  payload: Omit<WatchItemDto, "id" | "orderIndex" | "createdAt" | "watchlistId" | "addedBy"> & {
+    starRating?: number | null;
+  },
+) {
   await connectDb();
   const wl = await Watchlist.findById(watchlistId).lean();
   if (!wl) return null;
@@ -60,6 +66,7 @@ export async function addItem(watchlistId: string, userId: string, payload: Omit
     watchlistId,
     addedBy: userId,
     orderIndex,
+    starRating: payload.starRating ?? null,
     ...payload,
   });
   return serialize(item);

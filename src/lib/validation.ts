@@ -34,6 +34,7 @@ export const watchItemSchema = z.object({
   synopsis: z.string().trim().nullable(),
   omdbId: z.string().trim().nullable(),
   runtime: z.string().trim().nullable(),
+  starRating: z.number().min(1).max(5).nullable().optional(),
 });
 
 export const ratingSchema = z.object({

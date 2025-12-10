@@ -79,33 +79,33 @@ export function AddItemPanel({ watchlistId, onAdded }: Props) {
   };
 
   return (
-    <div className="space-y-3 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200">
+    <div className="space-y-3 card">
       <form onSubmit={search} className="flex flex-wrap gap-2">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+          className="modern flex-1"
           placeholder="Search by title or IMDB id..."
           required
         />
         <button
           type="submit"
           disabled={loading}
-          className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-500 disabled:opacity-70"
+          className="btn btn-primary"
         >
           {loading ? "Searching..." : "Search OMDb"}
         </button>
       </form>
-      {error && <p className="text-sm text-rose-600">{error}</p>}
+      {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
       <div className="grid gap-3">
         {results.slice(0, 6).map((result) => (
           <div
             key={result.imdbId}
-            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm"
+            className="flex items-center justify-between rounded-2xl border border-[var(--elevated)] bg-[var(--surface)] px-3 py-2 shadow-sm"
           >
             <div>
-              <p className="text-sm font-semibold text-slate-900">{result.title}</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm font-semibold text-[var(--text)]">{result.title}</p>
+              <p className="text-xs text-[var(--text2)]">
                 {result.type === "movie" ? "Movie" : "Series"}
                 {result.year ? ` · ${result.year}` : ""}
               </p>
@@ -114,14 +114,14 @@ export function AddItemPanel({ watchlistId, onAdded }: Props) {
               type="button"
               onClick={() => addItem(result.imdbId, result.type)}
               disabled={addingId === result.imdbId}
-              className="rounded-full bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:opacity-70"
+              className="btn btn-ghost px-3 py-1.5 text-xs"
             >
               {addingId === result.imdbId ? "Adding..." : "Add"}
             </button>
           </div>
         ))}
         {results.length === 0 && !loading && (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--text2)]">
             Try searching for a movie or series to auto-fill details from OMDb.
           </p>
         )}

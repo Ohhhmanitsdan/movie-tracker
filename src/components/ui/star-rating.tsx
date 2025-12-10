@@ -10,7 +10,7 @@ export function StarRating({ value, onChange, size = "md" }: Props) {
   const stars = [1, 2, 3, 4, 5];
   const sizeClass = size === "sm" ? "text-lg" : "text-2xl";
   return (
-    <div className="flex items-center gap-1 text-amber-400">
+    <div className="flex items-center gap-1 text-[var(--star)]">
       {stars.map((star) => (
         <button
           key={star}

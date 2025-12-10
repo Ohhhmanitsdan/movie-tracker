@@ -123,22 +123,22 @@ export function WatchlistDetailClient({ watchlist, initialItems }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">Watchlist</p>
-          <h1 className="text-3xl font-bold text-slate-900">{watchlist.name}</h1>
-          <p className="text-sm text-slate-600">
-            Invite code: <span className="font-mono text-slate-800">{watchlist.inviteCode}</span>
-          </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text2)]">Watchlist</p>
+            <h1 className="text-3xl font-bold text-[var(--text)]">{watchlist.name}</h1>
+            <p className="text-sm text-[var(--text2)]">
+              Invite code: <span className="font-mono text-[var(--text)]">{watchlist.inviteCode}</span>
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText(`${window.location.origin}/app/watchlists/${watchlist.id}?code=${watchlist.inviteCode}`)}
+            className="btn btn-primary"
+          >
+            Copy invite link
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => navigator.clipboard.writeText(`${window.location.origin}/app/watchlists/${watchlist.id}?code=${watchlist.inviteCode}`)}
-          className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-500"
-        >
-          Copy invite link
-        </button>
-      </div>
 
       <AddItemPanel
         watchlistId={watchlist.id}
@@ -153,13 +153,13 @@ export function WatchlistDetailClient({ watchlist, initialItems }: Props) {
       />
 
       {banner && (
-        <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-100">
+        <div className="rounded-2xl bg-[var(--elevated)] px-4 py-3 text-sm text-[var(--text)] ring-1 ring-[var(--primary-glow)]">
           {banner}
         </div>
       )}
 
       {randomPick && (
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-900">
+        <div className="rounded-2xl border border-[var(--elevated)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)]">
           Random pick: <strong>{randomPick.title}</strong> ({randomPick.type}
           {randomPick.year ? ` · ${randomPick.year}` : ""})
         </div>
@@ -181,13 +181,13 @@ export function WatchlistDetailClient({ watchlist, initialItems }: Props) {
       </DndContext>
 
       {filtered.length === 0 && (
-        <div className="rounded-3xl border border-dashed border-slate-200 bg-white/70 p-8 text-center text-slate-600">
+        <div className="rounded-3xl border border-dashed border-[var(--elevated)] bg-[var(--surface)] p-8 text-center text-[var(--text2)]">
           No items match these filters. Add something new or clear the filters.
         </div>
       )}
 
       {saving && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-sm text-white shadow-lg">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-[var(--surface)] px-4 py-2 text-sm text-[var(--text)] shadow-lg ring-1 ring-[var(--elevated)]">
           Saving order...
         </div>
       )}
@@ -202,10 +202,13 @@ function SortableItem({
   id: string;
   children: React.ReactNode;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    boxShadow: isDragging ? "0 10px 30px rgba(0,0,0,0.35)" : undefined,
+    transformOrigin: "center",
+    scale: isDragging ? 1.03 : 1,
   };
 
   return (

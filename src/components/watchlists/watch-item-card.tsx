@@ -10,7 +10,7 @@ type Props = {
 
 export function WatchItemCard({ item, onRatingChange }: Props) {
   return (
-    <div className="flex items-start gap-4 rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-slate-200">
+    <div className="card flex items-start gap-4">
       <div className="flex h-16 w-12 items-center justify-center overflow-hidden rounded-lg bg-slate-100 text-xs font-semibold text-slate-500">
         {item.poster ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -22,8 +22,8 @@ export function WatchItemCard({ item, onRatingChange }: Props) {
       <div className="flex-1 space-y-1">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-base font-semibold text-slate-900">{item.title}</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-base font-semibold text-[var(--text)]">{item.title}</p>
+            <p className="text-xs text-[var(--text2)]">
               {item.type === "movie" ? "Movie" : "Series"}
               {item.year ? ` · ${item.year}` : ""} {item.genre.length ? `· ${item.genre.join(", ")}` : ""}
             </p>
@@ -31,7 +31,7 @@ export function WatchItemCard({ item, onRatingChange }: Props) {
           <StarRating value={item.starRating} onChange={onRatingChange} size="sm" />
         </div>
         {item.synopsis && (
-          <p className="text-sm text-slate-600 line-clamp-2">{item.synopsis}</p>
+          <p className="text-sm text-[var(--text2)] line-clamp-2">{item.synopsis}</p>
         )}
       </div>
     </div>

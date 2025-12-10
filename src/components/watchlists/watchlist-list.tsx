@@ -62,61 +62,61 @@ export function WatchlistList({ initialWatchlists }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         <form className="space-y-2" onSubmit={handleCreate}>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-800">Create a watchlist</h3>
-            <span className="text-xs text-slate-500">Flow A</span>
+            <h3 className="text-sm font-semibold text-[var(--text)]">Create a watchlist</h3>
+            <span className="text-xs text-[var(--text2)]">Flow A</span>
           </div>
           <div className="flex gap-2">
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              className="modern flex-1"
               placeholder="Friday Night Picks"
               required
             />
             <button
               type="submit"
               disabled={creating}
-              className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-500 disabled:opacity-70"
+              className="btn btn-primary"
             >
               {creating ? "Creating..." : "Create"}
             </button>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--text2)]">
             You&apos;ll get an invite link and join code to share.
           </p>
         </form>
         <form className="space-y-2" onSubmit={handleJoin}>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-800">Join with a code</h3>
-            <span className="text-xs text-slate-500">Flow B</span>
+            <h3 className="text-sm font-semibold text-[var(--text)]">Join with a code</h3>
+            <span className="text-xs text-[var(--text2)]">Flow B</span>
           </div>
           <div className="flex gap-2">
             <input
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              className="modern flex-1"
               placeholder="Invite code"
               required
             />
             <button
               type="submit"
               disabled={joining}
-              className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:opacity-70"
+              className="btn btn-ghost"
             >
               {joining ? "Joining..." : "Join"}
             </button>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--text2)]">
             Paste the join code or invite link token shared with you.
           </p>
         </form>
       </div>
 
       {error && (
-        <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-100">
+        <div className="rounded-2xl bg-[var(--elevated)] px-4 py-3 text-sm text-[var(--danger)] ring-1 ring-[var(--danger)]/30">
           {error}
         </div>
       )}
@@ -126,24 +126,24 @@ export function WatchlistList({ initialWatchlists }: Props) {
           <button
             key={watchlist.id}
             onClick={() => router.push(`/app/watchlists/${watchlist.id}`)}
-            className="flex flex-col items-start gap-2 rounded-2xl bg-white/80 p-4 text-left shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-lg"
+            className="card flex flex-col items-start gap-2 text-left"
           >
             <div className="flex w-full items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-indigo-600">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
                 {watchlist.visibility === "link" ? "Link invite" : "Private"}
               </div>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-[var(--text2)]">
                 {new Date(watchlist.createdAt).toLocaleDateString()}
               </span>
             </div>
-            <h3 className="text-lg font-semibold text-slate-900">{watchlist.name}</h3>
-            <p className="text-sm text-slate-600">
+            <h3 className="text-lg font-semibold text-[var(--text)]">{watchlist.name}</h3>
+            <p className="text-sm text-[var(--text2)]">
               {watchlist.memberCount} {watchlist.memberCount === 1 ? "member" : "members"} • Invite
-              code: <span className="font-mono text-slate-800">{watchlist.inviteCode}</span>
+              code: <span className="font-mono text-[var(--text)]">{watchlist.inviteCode}</span>
             </p>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-700">
+              <span className="rounded-full bg-[var(--elevated)] px-2 py-1 text-xs font-semibold text-[var(--text)]">
                 Open watchlist
               </span>
             </div>
@@ -152,7 +152,7 @@ export function WatchlistList({ initialWatchlists }: Props) {
       </div>
 
       {watchlists.length === 0 && (
-        <div className="rounded-3xl border border-dashed border-slate-200 bg-white/70 p-8 text-center text-slate-600">
+        <div className="rounded-3xl border border-dashed border-[var(--elevated)] bg-[var(--surface)] p-8 text-center text-[var(--text2)]">
           No watchlists yet. Create one or join with a code to get started.
         </div>
       )}

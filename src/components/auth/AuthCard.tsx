@@ -37,7 +37,7 @@ export function AuthCard({ variant, onSubmit, submitting, error }: AuthCardProps
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<Record<string, string>>({
     resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues:

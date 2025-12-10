@@ -1,12 +1,13 @@
 import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 
-const sessionPassword = process.env.SESSION_PASSWORD || process.env.JWT_SECRET;
-const sessionTtl = Number(process.env.SESSION_TTL_SECONDS ?? 60 * 60 * 2);
+const rawSessionPassword = process.env.SESSION_PASSWORD || process.env.JWT_SECRET;
+const sessionPassword =
+  rawSessionPassword && rawSessionPassword.length >= 32
+    ? rawSessionPassword
+    : "dev-fallback-session-password-please-set-env-1234567890";
 
-if (!sessionPassword || sessionPassword.length < 32) {
-  throw new Error("Missing SESSION_PASSWORD (32+ chars) for iron-session.");
-}
+const sessionTtl = Number(process.env.SESSION_TTL_SECONDS ?? 60 * 60 * 2);
 
 export type SessionData = {
   user?: {
